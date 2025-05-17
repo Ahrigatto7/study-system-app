@@ -1,8 +1,8 @@
-openai
 streamlit
-python-dotenv
 pandas
+python-dotenv
+openai
+pyvis
 python-docx
 pymupdf
-konlpy
-openpyxl
+requests

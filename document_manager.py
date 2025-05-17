@@ -1,7 +1,9 @@
 import fitz  # PyMuPDF
 import pandas as pd
-from konlpy.tag import Okt
+import re
+from collections import Counter
 from docx import Document
+from note_manager import save_note
 
 def extract_text_from_pdf(file):
     text = ""
@@ -19,15 +21,14 @@ def extract_text_from_excel(file):
     return df.astype(str).apply(lambda x: " ".join(x), axis=1).str.cat(sep='\n')
 
 def extract_text_from_txt(file):
-    return file.read().decode("utf-8")
+    return file.read().decode("utf-8", errors="ignore")
 
 def extract_keywords(text, top_n=10):
-    okt = Okt()
-    nouns = okt.nouns(text)
-    freq = pd.Series(nouns).value_counts()
-    return freq.head(top_n).index.tolist()
+    words = re.findall(r'\b[가-힣a-zA-Z]{2,}\b', text)
+    freq = Counter(words).most_common(top_n)
+    return [word for word, _ in freq]
 
-def process_file(file, file_type):
+def process_file(file, file_type, save=False):
     if file_type == "pdf":
         text = extract_text_from_pdf(file)
     elif file_type == "docx":
@@ -38,5 +39,10 @@ def process_file(file, file_type):
         text = extract_text_from_txt(file)
     else:
         raise ValueError("지원하지 않는 파일 형식입니다.")
+
     keywords = extract_keywords(text)
+
+    if save:
+        save_note(file.name, text[:2000], ",".join(keywords))
+
     return text, keywords
