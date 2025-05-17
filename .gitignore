@@ -1,0 +1,17 @@
+# 🔒 Ignore sensitive config files
+.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# Environments
+.venv/
+venv/
+
+# System
+.DS_Store
